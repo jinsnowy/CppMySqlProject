@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{6c4ae1d9-1cf8-43ab-9684-55be8b7a4e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{9f017388-0dba-4104-bbb2-3c548bc05495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{3d980f29-dbe4-46b9-aeb8-c5acb0dbf1a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SqlCmd">
+      <UniqueIdentifier>{90efac1d-7fad-4669-be72-aecafbdab1e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SqlCmd.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="XStatement.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="Synchronization.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTime.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="PathManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Format.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="LogLevel.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DbConnection.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryCommon.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="XPrepareStatement.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="XQueryResult.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="SPManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="XStoredProcedure.h">
+      <Filter>SqlCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="SqlCmd.cpp">
+      <Filter>SqlCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="XStatement.cpp">
+      <Filter>SqlCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="PathManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="DbConnection.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="XPrepareStatement.cpp">
+      <Filter>SqlCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="XQueryResult.cpp">
+      <Filter>SqlCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="SPManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="XStoredProcedure.cpp">
+      <Filter>SqlCmd</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\StoredProcedure.sql" />
+  </ItemGroup>
+</Project>
