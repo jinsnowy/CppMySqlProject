@@ -1,8 +1,8 @@
-
+# Build Output
+x64/
+x86/
 MyConfig.xml
-Debug/
-Release/
-Log/
+Log/*
 .vs/
 
 # Prerequisites
