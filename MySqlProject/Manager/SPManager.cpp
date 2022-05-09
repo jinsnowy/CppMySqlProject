@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SPManager.h"
-#include "XStatement.h"
-#include "XStoredProcedure.h"
+#include "SqlCmd/XStatement.h"
+#include "SqlCmd/XStoredProcedure.h"
 
 #include <locale>
 #include <codecvt>

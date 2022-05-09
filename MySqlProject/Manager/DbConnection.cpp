@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DbConnection.h"
-#include "XStatement.h"
-#include "XPrepareStatement.h"
+#include "SqlCmd/XStatement.h"
+#include "SqlCmd/XPrepareStatement.h"
 
 std::shared_ptr<XStatement> DbConnection::CreateStatement()
 {

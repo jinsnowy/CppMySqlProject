@@ -29,10 +29,9 @@
 #include <cppconn/exception.h>
 #include <cppconn/prepared_statement.h>
 
-#include "Format.h"
-#include "Random.h"
-#include "Stopwatch.h"
-
-#include "Synchronization.h"
-#include "PathManager.h"
-#include "Logger.h"
+#include "Common/Format.h"
+#include "Common/Random.h"
+#include "Common/Stopwatch.h"
+#include "Common/Synchronization.h"
+#include "Manager/PathManager.h"
+#include "Logger/Logger.h"

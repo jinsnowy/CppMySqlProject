@@ -78,11 +78,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;$(ProjectDir);$(ProjectDir)Main\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc;$(ProjectDir);$(ProjectDir)Main\</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -145,60 +145,52 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="DatabaseManager.h" />
-    <ClInclude Include="DateTime.h" />
-    <ClInclude Include="DbConnection.h" />
-    <ClInclude Include="Format.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="LogLevel.h" />
-    <ClInclude Include="PathManager.h" />
-    <ClInclude Include="QueryCommon.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="SPManager.h" />
-    <ClInclude Include="SqlCmd.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Stopwatch.h" />
-    <ClInclude Include="Synchronization.h" />
-    <ClInclude Include="tinyxml2.h" />
-    <ClInclude Include="XQueryResult.h" />
-    <ClInclude Include="XStatement.h" />
-    <ClInclude Include="XPrepareStatement.h" />
-    <ClInclude Include="XStoredProcedure.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="DatabaseManager.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DbConnection.cpp" />
-    <ClCompile Include="Logger.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="PathManager.cpp" />
-    <ClCompile Include="SPManager.cpp" />
-    <ClCompile Include="SqlCmd.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="tinyxml2.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="XQueryResult.cpp" />
-    <ClCompile Include="XStatement.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="XPrepareStatement.cpp" />
-    <ClCompile Include="XStoredProcedure.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\StoredProcedure.sql" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Config.xml" />
     <Xml Include="..\MyConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\DateTime.h" />
+    <ClInclude Include="Common\Format.h" />
+    <ClInclude Include="Common\Random.h" />
+    <ClInclude Include="Common\Stopwatch.h" />
+    <ClInclude Include="Common\Synchronization.h" />
+    <ClInclude Include="Config\Config.h" />
+    <ClInclude Include="Config\tinyxml2.h" />
+    <ClInclude Include="Logger\Logger.h" />
+    <ClInclude Include="Logger\LogLevel.h" />
+    <ClInclude Include="Main\stdafx.h" />
+    <ClInclude Include="Manager\DatabaseManager.h" />
+    <ClInclude Include="Manager\DbConnection.h" />
+    <ClInclude Include="Manager\PathManager.h" />
+    <ClInclude Include="Manager\SPManager.h" />
+    <ClInclude Include="SqlCmd\QueryCommon.h" />
+    <ClInclude Include="SqlCmd\SqlCmd.h" />
+    <ClInclude Include="SqlCmd\XPrepareStatement.h" />
+    <ClInclude Include="SqlCmd\XQueryResult.h" />
+    <ClInclude Include="SqlCmd\XStatement.h" />
+    <ClInclude Include="SqlCmd\XStoredProcedure.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Config\Config.cpp" />
+    <ClCompile Include="Config\tinyxml2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Logger\Logger.cpp" />
+    <ClCompile Include="Main\main.cpp" />
+    <ClCompile Include="Main\stdafx.cpp" />
+    <ClCompile Include="Manager\DatabaseManager.cpp" />
+    <ClCompile Include="Manager\DbConnection.cpp" />
+    <ClCompile Include="Manager\PathManager.cpp" />
+    <ClCompile Include="Manager\SPManager.cpp" />
+    <ClCompile Include="SqlCmd\SqlCmd.cpp" />
+    <ClCompile Include="SqlCmd\XPrepareStatement.cpp" />
+    <ClCompile Include="SqlCmd\XQueryResult.cpp" />
+    <ClCompile Include="SqlCmd\XStatement.cpp" />
+    <ClCompile Include="SqlCmd\XStoredProcedure.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "DatabaseManager.h"
-#include "SPManager.h"
-#include "QueryCommon.h"
-#include "Config.h"
+#include "Manager/DatabaseManager.h"
+#include "Manager/SPManager.h"
+#include "Manager/DbConnection.h"
+#include "SqlCmd/QueryCommon.h"
+#include "Config/Config.h"
 
 struct UserInfo
 {
