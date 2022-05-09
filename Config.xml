@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+  <MySQL>
+    <hostaddress>127.0.0.1</hostaddress>
+    <port>3306</port>
+    <username>user</username>
+    <password></password>
+  </MySQL>
+</Config>

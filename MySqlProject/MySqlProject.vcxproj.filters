@@ -17,6 +17,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{f967c7a3-6440-4e8e-a0c2-4ad44ab17c9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SqlCmd.h">
@@ -73,6 +76,12 @@
     <ClInclude Include="stdafx.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -111,8 +120,18 @@
     <ClCompile Include="XStoredProcedure.cpp">
       <Filter>SqlCmd</Filter>
     </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\StoredProcedure.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Config.xml" />
+    <Xml Include="..\MyConfig.xml" />
   </ItemGroup>
 </Project>

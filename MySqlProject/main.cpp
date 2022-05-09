@@ -2,6 +2,7 @@
 #include "DatabaseManager.h"
 #include "SPManager.h"
 #include "QueryCommon.h"
+#include "Config.h"
 
 struct UserInfo
 {
@@ -27,6 +28,7 @@ DbConnection* g_Conn;
 std::vector<UserInfo> g_Users;
 
 const char* storedProcedureFileName = "StoredProcedure.sql";
+const char* configFileName = "MyConfig.xml";
 
 static void TestConnection()
 {
@@ -224,8 +226,9 @@ int main(int argc, char** argv)
 	PathManager::Initialize();
 	Logger::Initialize();
 	SPManager::Initialize(storedProcedureFileName);
+	Config::Initialize(configFileName);
 
-	g_Conn = DatabaseManager::Get()->CreateConnection("MyConnection", "tcp://127.0.0.1:3306", "root", "1234");
+	g_Conn = DatabaseManager::Get()->CreateConnection("MyConnection", Config::GetHostname(), Config::GetUsername(), Config::GetPassword());
 	g_Conn->SetAutoCommit(true);
 	g_Conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_REPEATABLE_READ);
 

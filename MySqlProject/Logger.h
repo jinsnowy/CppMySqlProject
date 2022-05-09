@@ -129,60 +129,6 @@ public:
 	{
 		Log(ELogLevel::Error, Format::format(format, std::forward<Args>(args)...));
 	}
-
-
-	//static void Log(const char* format, const std::string& s)
-	//{
-	//	Get()->LogFunc(Format::format(format, s.c_str()));
-	//}
-
-
-private:
-	//template<typename ...FArgs, typename Arg, typename ...BArgs>
-	//static void LogSplit(const char* const& format, FArgs&&... fArgs, Arg&& arg, BArgs&&... bArgs)
-	//{
-	//	if constexpr (is_first_of<std::string, BArgs>::value)
-	//	{
-	//		LogSplit(format, std::forward<Args>(args)...);
-	//	}
-	//	else
-	//	{
-	//		Get()->LogFunc(Format::format(format, std::forward<Args>(args)...));
-	//	}
-	//}
-
-	//template<typename ...FArgs, typename Arg, typename ...BArgs>
-	//static void LogSplit(const char* const& format, FArgs&&... fArgs, std::string&& arg, BArgs&&... bArgs)
-	//{
-	//	if constexpr (is_one_of<std::string, Args>::value)
-	//	{
-	//		LogSplit(format, std::forward<Args>(args)...);
-	//	}
-	//	else
-	//	{
-	//		Get()->LogFunc(Format::format(format, std::forward<Args>(args)...));
-	//	}
-	//}
-
-	//template<typename ...FArgs, typename Arg>
-	//static void LogSplit(const char* const& format, FArgs&&... fArgs, Arg&& arg)
-	//{
-	//	if constexpr (is_one_of<std::string, Args>::value)
-	//	{
-	//		LogSplit(format, std::forward<Args>(args)...);
-	//	}
-	//	else
-	//	{
-	//		Get()->LogFunc(Format::format(format, std::forward<Args>(args)...));
-	//	}
-	//}
-
-	//template<typename ...Args>
-	//static void LogComplete(const char* const& format, Args&&... args)
-	//{
-	//	Get()->LogFunc(Format::format(format, std::forward<Args>(args)...));
-	//}
-
 private:
 	void LogFunc(ELogLevel level, const char* message)
 	{
