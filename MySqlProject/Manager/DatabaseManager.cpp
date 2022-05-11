@@ -1,8 +1,18 @@
 #include "stdafx.h"
 #include "DatabaseManager.h"
 #include "DbConnection.h"
+#include "SqlDef/Xtable.h"
 
 std::unique_ptr<DatabaseManager> DatabaseManager::mInst = nullptr;
+
+DatabaseManager::~DatabaseManager()
+{
+}
+
+void DatabaseManager::Release()
+{
+	mInst = nullptr;
+}
 
 bool DatabaseManager::Initialize()
 {
@@ -17,6 +27,24 @@ bool DatabaseManager::Initialize()
 	}
 
 	return true;
+}
+
+void DatabaseManager::SetDefaultConnection(DbConnection* connection)
+{
+	mDefaultConnection = connection;
+}
+
+Database* DatabaseManager::RegisterDatabase(const char* name)
+{
+	std::string key = name;
+	if (mDatabaseMap.find(key) != mDatabaseMap.end())
+	{
+		return mDatabaseMap[key].get();
+	}
+
+	mDatabaseMap.emplace(key, Database::Initialize(name));
+
+	return mDatabaseMap[key].get();
 }
 
 DbConnection* DatabaseManager::GetConnection(const char* connectionName)
