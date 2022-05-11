@@ -174,18 +174,19 @@ std::vector<std::string> SPManager::Split(std::string source, std::string delimi
 {
 	size_t delim_sz = delimiter.size();
 	size_t pos = 0, offset = 0;
-
 	std::vector<std::string> result;
 	while ((pos = source.find(delimiter, offset)) != std::string::npos)
 	{
 		auto str = source.substr(offset, pos - offset + 1);
 		result.emplace_back(std::move(str));
-		offset = pos + delim_sz;
+
+		offset = pos + 1;
 	}
 	
-	if (offset < source.size())
+	auto rem = source.substr(offset);
+	if (rem.size() > 0)
 	{
-		result.emplace_back(source.substr(offset));
+		result.emplace_back(std::move(rem));
 	}
 	
 	return result;

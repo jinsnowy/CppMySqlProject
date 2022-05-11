@@ -8,10 +8,10 @@ private:
 	std::string mServer;
 	std::string mUsername;
 	std::string mPassword;
-
 	std::unique_ptr<sql::Connection> mConn;
 
 public:
+
 	DbConnection(const std::string& server, const std::string& username, const std::string& password, sql::Connection* conn)
 		:
 		mServer(server),
@@ -26,3 +26,4 @@ public:
 	void SetAutoCommit(bool bAuto);
 	void SetIsolationLevel(sql::enum_transaction_isolation level);
 };
+

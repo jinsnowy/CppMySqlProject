@@ -166,16 +166,12 @@
     <ClInclude Include="Manager\DbConnection.h" />
     <ClInclude Include="Manager\PathManager.h" />
     <ClInclude Include="Manager\SPManager.h" />
-    <ClInclude Include="Manager\Database.h" />
     <ClInclude Include="SqlCmd\QueryCommon.h" />
     <ClInclude Include="SqlCmd\SqlCmd.h" />
     <ClInclude Include="SqlCmd\XPrepareStatement.h" />
     <ClInclude Include="SqlCmd\XQueryResult.h" />
     <ClInclude Include="SqlCmd\XStatement.h" />
     <ClInclude Include="SqlCmd\XStoredProcedure.h" />
-    <ClInclude Include="SqlDef\ColumnAttribute.h" />
-    <ClInclude Include="SqlDef\XColumn.h" />
-    <ClInclude Include="SqlDef\XTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config\Config.cpp" />
@@ -190,15 +186,11 @@
     <ClCompile Include="Manager\DbConnection.cpp" />
     <ClCompile Include="Manager\PathManager.cpp" />
     <ClCompile Include="Manager\SPManager.cpp" />
-    <ClCompile Include="Manager\Database.cpp" />
     <ClCompile Include="SqlCmd\SqlCmd.cpp" />
     <ClCompile Include="SqlCmd\XPrepareStatement.cpp" />
     <ClCompile Include="SqlCmd\XQueryResult.cpp" />
     <ClCompile Include="SqlCmd\XStatement.cpp" />
     <ClCompile Include="SqlCmd\XStoredProcedure.cpp" />
-    <ClCompile Include="SqlDef\ColumnAttribute.cpp" />
-    <ClCompile Include="SqlDef\XColumn.cpp" />
-    <ClCompile Include="SqlDef\XTable.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

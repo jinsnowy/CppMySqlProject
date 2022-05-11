@@ -4,7 +4,6 @@
 #include "Manager/DbConnection.h"
 #include "SqlCmd/QueryCommon.h"
 #include "Config/Config.h"
-#include "SqlDef/XTable.h"
 
 struct UserInfo
 {
@@ -38,71 +37,40 @@ static void TestConnection()
 	statement->Execute("USE StockDb;");
 }
 
-static void CreateTables()
+static void TruncateTableAll()
 {
-	using namespace sqldef;
+	auto statement = g_Conn->CreateStatement();
+	statement->Execute("CREATE DATABASE IF NOT EXISTS StockDb");
+	statement->Execute("SET foreign_key_checks=0;");
 
-	auto db = DatabaseManager::Get()->RegisterDatabase("StockDb");
+	statement->Execute("DROP TABLE IF EXISTS UserTbl;");
+	statement->Execute("CREATE TABLE `StockDb`.`UserTbl` ("
+		"`userId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+		"`userName` VARCHAR(24) NOT NULL UNIQUE,"
+		"`created` DATETIME NOT NULL"
+		");");
 
-	auto userTbl = Table("UserTbl");
-	userTbl->Append(Column<EDataType::BIGINT>("userId", Const::NotNull, Const::Auto, Const::Pk));
-	userTbl->Append(Column<EDataType::VARCHAR, 24>("userName", Const::NotNull, Const::Unique));
-	userTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
-	if (!db->CreateTable(userTbl.get()))
-		return;
+	statement->Execute("DROP TABLE IF EXISTS AccountTbl;");
+	statement->Execute("CREATE TABLE `StockDb`.`AccountTbl` ("
+		"`accountId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+		"`userId` BIGINT NOT NULL UNIQUE,"
+		"`cashAmount` BIGINT NOT NULL DEFAULT 0,"
+		"`created` DATETIME NOT NULL,"
+		"`updated` DATETIME NOT NULL,"
+		"CONSTRAINT fk_accounttbl_usertbl FOREIGN KEY(userId) REFERENCES userTbl(userId)"
+		");");
 
-	auto accountTbl = Table("AccountTbl");
-	accountTbl->Append(Column<EDataType::BIGINT>("accountId", Const::NotNull, Const::Auto, Const::Pk));
-	accountTbl->Append(Column<EDataType::BIGINT>("userId", Const::NotNull));
-	accountTbl->Append(Column<EDataType::BIGINT>("cashAmount", Const::NotNull, Const::Zero));
-	accountTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
-	accountTbl->Append(Column<EDataType::DATETIME>("updated", Const::NotNull));
-	accountTbl->PushFk("userId", "userTbl", "userId");
-	if (!db->CreateTable(accountTbl.get()))
-		return;
+	statement->Execute("DROP TABLE IF EXISTS TransactionTbl;");
+	statement->Execute("CREATE TABLE `StockDb`.`TransactionTbl` ("
+		"`transactionId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+		"`cashAmount` BIGINT NOT NULL,"
+		"`srcAccountId` BIGINT NOT NULL,"
+		"`dstAccountId` BIGINT NOT NULL,"
+		"`created` DATETIME NOT NULL"
+		");");
 
-	auto transactionTbl = Table("TransactionTbl");
-	transactionTbl->Append(Column<EDataType::BIGINT>("transactionId", Const::Const::NotNull, Const::Auto, Const::Pk));
-	transactionTbl->Append(Column<EDataType::BIGINT>("cashAmount", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::BIGINT>("srcAccountId", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::BIGINT>("dstAccountId", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
-	if (!db->CreateTable(transactionTbl.get()))
-		return;
-
-	// auto statement = g_Conn->CreateStatement();
-	//statement->Execute("CREATE DATABASE IF NOT EXISTS StockDb");
-	//statement->Execute("SET foreign_key_checks=0;");
-
-	//statement->Execute("DROP TABLE IF EXISTS UserTbl;");
-	//statement->Execute("CREATE TABLE `StockDb`.`UserTbl` ("
-	//	"`userId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-	//	"`userName` VARCHAR(24) NOT NULL UNIQUE,"
-	//	"`created` DATETIME NOT NULL"
-	//	");");
-
-
-	//statement->Execute("DROP TABLE IF EXISTS AccountTbl;");
-	//statement->Execute("CREATE TABLE `StockDb`.`AccountTbl` ("
-	//	"`accountId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-	//	"`userId` BIGINT NOT NULL UNIQUE,"
-	//	"`cashAmount` BIGINT NOT NULL DEFAULT 0,"
-	//	"`created` DATETIME NOT NULL,"
-	//	"`updated` DATETIME NOT NULL,"
-	//	"CONSTRAINT fk_accounttbl_usertbl FOREIGN KEY(userId) REFERENCES userTbl(userId)"
-	//	");");
-
-	//statement->Execute("DROP TABLE IF EXISTS TransactionTbl;");
-	//statement->Execute("CREATE TABLE `StockDb`.`TransactionTbl` ("
-	//	"`transactionId` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-	//	"`cashAmount` BIGINT NOT NULL,"
-	//	"`srcAccountId` BIGINT NOT NULL,"
-	//	"`dstAccountId` BIGINT NOT NULL,"
-	//	"`created` DATETIME NOT NULL"
-	//	");");
-
-	//statement->Execute("SET foreign_key_checks=1;");
-	Logger::DebugLog("Create Tables");
+	statement->Execute("SET foreign_key_checks=1;");
+	Logger::DebugLog("Truncate Table All");
 }
 
 static void InitializeDatas()
@@ -264,12 +232,11 @@ int main(int argc, char** argv)
 	g_Conn = DatabaseManager::Get()->CreateConnection("MyConnection", Config::GetHostname(), Config::GetUsername(), Config::GetPassword());
 	g_Conn->SetAutoCommit(true);
 	g_Conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_REPEATABLE_READ);
-	DatabaseManager::Get()->SetDefaultConnection(g_Conn);
 
 	try 
 	{
 		TestConnection();
-		CreateTables();
+		TruncateTableAll();
 		SPManager::Install(g_Conn->CreateStatement());
 
 		CreateUserDatas();

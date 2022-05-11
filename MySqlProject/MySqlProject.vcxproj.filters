@@ -20,12 +20,6 @@
     <Filter Include="Logger">
       <UniqueIdentifier>{3d980f29-dbe4-46b9-aeb8-c5acb0dbf1a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SqlDef">
-      <UniqueIdentifier>{af9bf214-b68d-4f09-859f-e16534bbb439}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SqlDef\ColumnAttribute">
-      <UniqueIdentifier>{1636f5df-82aa-4866-b209-3ea908b086c0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\StoredProcedure.sql" />
@@ -95,18 +89,6 @@
     <ClInclude Include="Logger\LogLevel.h">
       <Filter>Logger</Filter>
     </ClInclude>
-    <ClInclude Include="SqlDef\XColumn.h">
-      <Filter>SqlDef</Filter>
-    </ClInclude>
-    <ClInclude Include="SqlDef\ColumnAttribute.h">
-      <Filter>SqlDef\ColumnAttribute</Filter>
-    </ClInclude>
-    <ClInclude Include="SqlDef\XTable.h">
-      <Filter>SqlDef</Filter>
-    </ClInclude>
-    <ClInclude Include="Manager\Database.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SqlCmd\SqlCmd.cpp">
@@ -150,18 +132,6 @@
     </ClCompile>
     <ClCompile Include="Logger\Logger.cpp">
       <Filter>Logger</Filter>
-    </ClCompile>
-    <ClCompile Include="SqlDef\XColumn.cpp">
-      <Filter>SqlDef</Filter>
-    </ClCompile>
-    <ClCompile Include="SqlDef\ColumnAttribute.cpp">
-      <Filter>SqlDef\ColumnAttribute</Filter>
-    </ClCompile>
-    <ClCompile Include="SqlDef\XTable.cpp">
-      <Filter>SqlDef</Filter>
-    </ClCompile>
-    <ClCompile Include="Manager\Database.cpp">
-      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
