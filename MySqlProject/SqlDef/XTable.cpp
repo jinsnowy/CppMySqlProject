@@ -7,6 +7,15 @@ static std::string wrap(const std::string& s, char c = '`')
 	return Format::format("%c%s%c", c, s.c_str(), c);
 }
 
+bool sqldef::XTable::IsValid() const
+{
+	int pk_count = (int)std::count_if(mColumns.begin(), mColumns.end(), [&](const std::unique_ptr<XColumn>& col) { return col->IsPk(); });
+	if (pk_count != 1)
+		return false;
+
+	return true;
+}
+
 void sqldef::XTable::PushFk(const char* srcCol, const char* FkTable, const char* FkCol)
 {
 	for (const auto& col : mColumns)

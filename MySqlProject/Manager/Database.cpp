@@ -58,6 +58,12 @@ sqldef::XTable* Database::CreateTable(std::unique_ptr<sqldef::XTable> table, boo
 		return nullptr;
 	}
 
+	if (table->IsValid() == false)
+	{
+		Logger::ErrorLog("Invalid Table %s", table->GetName().c_str());
+		return nullptr;
+	}
+
 	auto statement = connection->CreateStatement();
 	if (bDropIfExists)
 	{

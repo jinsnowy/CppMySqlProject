@@ -50,6 +50,8 @@ namespace sqldef
 			return *this;
 		}
 
+		bool IsValid() const;
+
 		void PushFk(const char* srcCol, const char* FkTable, const char* FkCol);
 
 		std::string Drop(Database* database);
