@@ -35,12 +35,12 @@ void SPManager::Initialize(const std::string& spFileName)
 	}
 }
 
-void SPManager::Install(const std::shared_ptr<XStatement>& statement)
+void SPManager::Install()
 {
 	auto& container = mInst->mContainer;
 	for (auto& pair : container)
 	{
-		pair.second->Initialize(statement);
+		pair.second->Initialize();
 	}
 }
 

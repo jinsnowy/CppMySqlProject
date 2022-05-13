@@ -18,7 +18,7 @@ public:
 
 	static void Initialize(const std::string& spFilePath);
 
-	static void Install(const std::shared_ptr<XStatement>& statement);
+	static void Install();
 
 	static XStoredProcedure* GetProcedure(const std::string& spName);
 

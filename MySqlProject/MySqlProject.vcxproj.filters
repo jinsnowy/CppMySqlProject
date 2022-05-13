@@ -26,6 +26,12 @@
     <Filter Include="SqlDef\ColumnAttribute">
       <UniqueIdentifier>{1636f5df-82aa-4866-b209-3ea908b086c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ProjectDef">
+      <UniqueIdentifier>{fb607249-06e3-49d1-9f01-8bf58ed5437d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ProjectScenario">
+      <UniqueIdentifier>{b8ea4667-e882-47e3-889e-8a166dd33dba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\StoredProcedure.sql" />
@@ -107,6 +113,24 @@
     <ClInclude Include="Manager\Database.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="UserInfo.h">
+      <Filter>ProjectDef</Filter>
+    </ClInclude>
+    <ClInclude Include="UserFactory.h">
+      <Filter>ProjectDef</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectScenario.h">
+      <Filter>ProjectScenario</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectCommon.h">
+      <Filter>ProjectDef</Filter>
+    </ClInclude>
+    <ClInclude Include="StoredProcedure.h">
+      <Filter>ProjectScenario</Filter>
+    </ClInclude>
+    <ClInclude Include="AccountInfo.h">
+      <Filter>ProjectDef</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SqlCmd\SqlCmd.cpp">
@@ -162,6 +186,18 @@
     </ClCompile>
     <ClCompile Include="Manager\Database.cpp">
       <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfo.cpp">
+      <Filter>ProjectDef</Filter>
+    </ClCompile>
+    <ClCompile Include="UserFactory.cpp">
+      <Filter>ProjectDef</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectScenario.cpp">
+      <Filter>ProjectScenario</Filter>
+    </ClCompile>
+    <ClCompile Include="AccountInfo.cpp">
+      <Filter>ProjectDef</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

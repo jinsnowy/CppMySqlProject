@@ -23,7 +23,7 @@ public:
 		mResult(-1)
 	{}
 
-	void Initialize(const std::shared_ptr<XStatement>& statement);
+	void Initialize();
 
 	int GetResult() const { return mResult; }
 protected:
@@ -32,6 +32,8 @@ protected:
 	virtual const char* Where() override { return mCallString.c_str(); }
 
 public:
+	void BindStatement(const std::shared_ptr<XStatement> statement);
+
 	template<typename ...Args>
 	void Bind(const std::shared_ptr<XStatement>& statement, Args&&... args)
 	{

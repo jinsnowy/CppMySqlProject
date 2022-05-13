@@ -152,6 +152,7 @@
     <Xml Include="..\MyConfig.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccountInfo.h" />
     <ClInclude Include="Common\DateTime.h" />
     <ClInclude Include="Common\Format.h" />
     <ClInclude Include="Common\Random.h" />
@@ -167,6 +168,8 @@
     <ClInclude Include="Manager\PathManager.h" />
     <ClInclude Include="Manager\SPManager.h" />
     <ClInclude Include="Manager\Database.h" />
+    <ClInclude Include="ProjectCommon.h" />
+    <ClInclude Include="ProjectScenario.h" />
     <ClInclude Include="SqlCmd\QueryCommon.h" />
     <ClInclude Include="SqlCmd\SqlCmd.h" />
     <ClInclude Include="SqlCmd\XPrepareStatement.h" />
@@ -176,8 +179,12 @@
     <ClInclude Include="SqlDef\ColumnAttribute.h" />
     <ClInclude Include="SqlDef\XColumn.h" />
     <ClInclude Include="SqlDef\XTable.h" />
+    <ClInclude Include="StoredProcedure.h" />
+    <ClInclude Include="UserFactory.h" />
+    <ClInclude Include="UserInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AccountInfo.cpp" />
     <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\tinyxml2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -185,12 +192,16 @@
     </ClCompile>
     <ClCompile Include="Logger\Logger.cpp" />
     <ClCompile Include="Main\main.cpp" />
-    <ClCompile Include="Main\stdafx.cpp" />
+    <ClCompile Include="Main\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Manager\DatabaseManager.cpp" />
     <ClCompile Include="Manager\DbConnection.cpp" />
     <ClCompile Include="Manager\PathManager.cpp" />
     <ClCompile Include="Manager\SPManager.cpp" />
     <ClCompile Include="Manager\Database.cpp" />
+    <ClCompile Include="ProjectScenario.cpp" />
     <ClCompile Include="SqlCmd\SqlCmd.cpp" />
     <ClCompile Include="SqlCmd\XPrepareStatement.cpp" />
     <ClCompile Include="SqlCmd\XQueryResult.cpp" />
@@ -199,6 +210,8 @@
     <ClCompile Include="SqlDef\ColumnAttribute.cpp" />
     <ClCompile Include="SqlDef\XColumn.cpp" />
     <ClCompile Include="SqlDef\XTable.cpp" />
+    <ClCompile Include="UserFactory.cpp" />
+    <ClCompile Include="UserInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

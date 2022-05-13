@@ -2,6 +2,8 @@
 #include "DatabaseManager.h"
 #include "DbConnection.h"
 #include "SqlDef/Xtable.h"
+#include "Database.h"
+#include "SqlCmd/XStatement.h"
 
 std::unique_ptr<DatabaseManager> DatabaseManager::mInst = nullptr;
 
@@ -45,6 +47,23 @@ Database* DatabaseManager::RegisterDatabase(const char* name)
 	mDatabaseMap.emplace(key, Database::Initialize(name));
 
 	return mDatabaseMap[key].get();
+}
+
+Database* DatabaseManager::FindDatabase(const char* name)
+{
+	std::string key = name;
+	if (mDatabaseMap.find(key) != mDatabaseMap.end())
+	{
+		return mDatabaseMap[key].get();
+	}
+
+	return nullptr;
+}
+
+void DatabaseManager::UseDatabase(Database* db)
+{
+	auto statement = mDefaultConnection->CreateStatement();
+	statement->Execute(db->GetUseString());
 }
 
 DbConnection* DatabaseManager::GetConnection(const char* connectionName)

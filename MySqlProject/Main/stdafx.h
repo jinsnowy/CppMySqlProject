@@ -35,3 +35,6 @@
 #include "Common/Synchronization.h"
 #include "Manager/PathManager.h"
 #include "Logger/Logger.h"
+
+class DbConnection;
+extern DbConnection* g_Conn;

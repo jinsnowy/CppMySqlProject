@@ -2,9 +2,19 @@
 #include "XStoredProcedure.h"
 #include "XStatement.h"
 #include "XQueryResult.h"
+#include "Manager/DbConnection.h"
+#include "Manager/DatabaseManager.h"
 
-void XStoredProcedure::Initialize(const std::shared_ptr<XStatement>& statement)
+void XStoredProcedure::Initialize()
 {
+	auto connection = DatabaseManager::Get()->GetDefaultConnection();
+	if (connection == nullptr)
+	{
+		Logger::ErrorLog("No Default Connection");
+		return;
+	}
+
+	auto statement = connection->CreateStatement();
 	mStatement = statement;
 	mStatement->Execute(mDropProcedureString);
 	mStatement->Execute(mCreateProcedureString);
@@ -39,3 +49,7 @@ void XStoredProcedure::OnError()
 	mStatement->Execute("ROLLBACK");
 }
 
+void XStoredProcedure::BindStatement(const std::shared_ptr<XStatement> statement)
+{
+	mStatement = statement;
+}

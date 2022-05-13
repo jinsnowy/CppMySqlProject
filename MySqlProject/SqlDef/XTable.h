@@ -33,6 +33,8 @@ namespace sqldef
 
 		XTable(const XTable&) = delete;
 		XTable& operator=(const XTable&) = delete;
+
+		std::string GetName() const { return mName; }
 	
 		XTable& Append(std::unique_ptr<XColumn>&& column)
 		{

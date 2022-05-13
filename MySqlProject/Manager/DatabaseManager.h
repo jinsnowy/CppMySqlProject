@@ -41,7 +41,10 @@ public:
 	// Assume database already exists
 	Database* RegisterDatabase(const char* name);
 
+	Database* FindDatabase(const char* name);
+
+	void UseDatabase(Database* db);
+
 	DbConnection* GetConnection(const char* connectionName);
 
-	
 };
