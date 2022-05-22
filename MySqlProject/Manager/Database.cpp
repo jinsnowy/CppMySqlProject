@@ -7,10 +7,10 @@
 
 struct fk_check
 {
-	std::shared_ptr<XStatement> statment;
-	fk_check(const std::shared_ptr<XStatement>& _statment)
+	std::unique_ptr<XStatement> statment;
+	fk_check(std::unique_ptr<XStatement> _statment)
 		:
-		statment(_statment)
+		statment(std::move(_statment))
 	{
 		statment->Execute("SET foreign_key_checks=0;");
 	}
@@ -64,15 +64,16 @@ sqldef::XTable* Database::CreateTable(std::unique_ptr<sqldef::XTable> table, boo
 		return nullptr;
 	}
 
-	auto statement = connection->CreateStatement();
+
 	if (bDropIfExists)
 	{
-		fk_check _(statement);
+		fk_check check(connection->CreateStatement());
 		auto dropStatement = table->Drop(this);
-		if (!statement->Execute(dropStatement))
+		if (!check.statment->Execute(dropStatement))
 			return nullptr;
 	}
 
+	auto statement = connection->CreateStatement();
 	auto createStatement = table->Create(this);
 	if (!statement->Execute(createStatement))
 		return nullptr;
@@ -101,11 +102,11 @@ bool Database::ClearTable(const std::string& tableName)
 		return false;
 	}
 
-	auto statement = connection->CreateStatement();
-	fk_check _(statement);
+
+	fk_check _(connection->CreateStatement());
 	auto dropStatement = table->Drop(this);
 
-	return statement->Execute(dropStatement);
+	return connection->CreateStatement()->Execute(dropStatement);
 }
 
 std::vector<sqldef::XTable*> Database::GetAllTables() const

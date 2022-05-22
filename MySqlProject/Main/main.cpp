@@ -38,6 +38,11 @@ int main(int argc, char** argv)
 		ProjectScenario::CreateTables();
 		ProjectScenario::CreateUsers();
 		ProjectScenario::CreateAccountDatas();
+		
+		ProjectScenario::AddSomeCash();
+
+		ProjectScenario::QueryDatas();
+		ProjectScenario::SendSomeCash();
 	}
 	catch (sql::SQLException e)
 	{
@@ -45,9 +50,10 @@ int main(int argc, char** argv)
 	}
 	catch (std::exception e)
 	{
-		Logger::ErrorLog("Exception , Error Message : %s", e.what());
+		Logger::ErrorLog("Exception, Error Message : %s", e.what());
 	}
 
+	SPManager::Release();
 	DatabaseManager::Release();
 
 	return 0;

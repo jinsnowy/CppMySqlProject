@@ -15,7 +15,7 @@ public:
 
 	std::vector<std::shared_ptr<UserInfo>> GetUsers() const;
 
-	void CreateUser(long long userId, const std::string& userName);
+	std::shared_ptr<UserInfo> CreateUser(long long userId, const std::string& userName);
 
 	std::shared_ptr<UserInfo> GetUser(long long userId);
 

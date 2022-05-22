@@ -7,19 +7,19 @@ class XQueryResult : public SqlNoCmd<XQueryResult>
 {
 private:
 	sql::SQLString mQueryString;
-	std::shared_ptr<XStatement> mStatement;
+	std::unique_ptr<XStatement> mStatement;
 	std::shared_ptr<sql::ResultSet> mResult;
 
 public:
-	XQueryResult(const std::shared_ptr<XStatement>& statement, const std::string& queryString)
+	XQueryResult(sql::Statement* const& statement, const std::string& queryString)
 		:
-		mStatement(statement),
+		mStatement(std::make_unique<XStatement>(statement)),
 		mQueryString(queryString)
 	{
 	}
 
 protected:
-	virtual void OnExecute() override;
+	virtual bool OnExecute() override;
 	virtual const char* Where() override { return "Query"; }
 
 public:

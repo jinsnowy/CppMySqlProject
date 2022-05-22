@@ -20,8 +20,11 @@ public:
 		mConn(conn)
 	{}
 
-	std::shared_ptr<XStatement> CreateStatement();
-	std::shared_ptr<XPrepareStatement> CreatePrepareStatement(const std::string& statement, bool bTransaction = true);
+	sql::Connection* Raw() const { return mConn.get(); }
+
+	sql::Statement* CreateRawStatement() { return mConn->createStatement(); }
+	std::unique_ptr<XStatement> CreateStatement();
+	std::unique_ptr<XPrepareStatement> CreatePrepareStatement(const std::string& statement, bool bTransaction = true);
 
 	void SetAutoCommit(bool bAuto);
 	void SetIsolationLevel(sql::enum_transaction_isolation level);

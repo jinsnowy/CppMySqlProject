@@ -15,41 +15,44 @@ void XStoredProcedure::Initialize()
 	}
 
 	auto statement = connection->CreateStatement();
-	mStatement = statement;
-	mStatement->Execute(mDropProcedureString);
-	mStatement->Execute(mCreateProcedureString);
+	statement->ExecuteRaw(mDropProcedureString);
+	statement->ExecuteRaw(mCreateProcedureString);
 
 	Logger::DebugLog("Procedure %s Created.", mName.c_str());
 }
 
-void XStoredProcedure::OnExecute()
+bool XStoredProcedure::OnExecute()
 {
-	mResult = -1;
-
+	mCallResult = -1;
 	if (mCallString.length() == 0)
 	{
 		Bind();
 	}
 
-	mStatement->Execute(mCallString);
-	auto query = mStatement->ExecuteQuery("SELECT @result;");
-	auto queryResult = query->GetResult();
-	if (queryResult->next())
-	{
-		mResult = queryResult->getInt("@result");
-	}
-	else
+	auto conn = DatabaseManager::Get()->GetDefaultConnection();
+	mStatement = conn->CreateStatement();
+	mStatement->ExecuteRaw(mCallString);
+
+	mStatement = conn->CreateStatement();
+	mStatement->ExecuteQueryResult(mQueryResultString, mResultSet);
+	if (mResultSet == nullptr || mResultSet->next() == false)
 	{
 		throw new std::exception("No Result On SP Query");
 	}
+
+	mCallResult = mResultSet->getInt("@RESULT");
+	if (mCallResult != 0)
+	{
+		Logger::ErrorLog("Stored Procedure %s Error Result : %d", mName.c_str(), mCallResult);
+		mStatement->ExecuteRaw("ROLLBACK");
+
+		return false;
+	}
+
+	return true;
 }
 
 void XStoredProcedure::OnError()
 {
-	mStatement->Execute("ROLLBACK");
-}
-
-void XStoredProcedure::BindStatement(const std::shared_ptr<XStatement> statement)
-{
-	mStatement = statement;
+	mStatement->ExecuteRaw("ROLLBACK");
 }

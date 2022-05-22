@@ -138,19 +138,20 @@ private:
 			std::lock_guard<std::mutex> _(mSync);
 			mBuffer << logMessage << "\n";
 		}
+
 		mCV.notify_one();
 	}
 
 	void Write()
 	{
-		if (mInst->mOutFile.is_open())
+		if (mOutFile.is_open())
 		{
-			mInst->mOutFile << mBufferedString;
+			mOutFile << mBufferedString << std::flush;
 		}
 
 		if (mConsoleLog)
 		{
-			std::cout << mBufferedString;
+			std::cout << mBufferedString << std::flush;
 		}
 
 		mBufferedString.clear();
@@ -164,17 +165,12 @@ private:
 		{
 			{
 				std::unique_lock<std::mutex> lk(mSync);
-				
-				mCV.wait(lk, [this]()
+
+				mCV.wait(lk, [this]() 
 				{
 					mBufferedString = mBuffer.str();
 					return mExitFlag || mBufferedString.size() > 0;
 				});
-
-				if (mBufferedString.size() == 0)
-				{
-					mBufferedString = mBuffer.str();
-				}
 
 				mBuffer.str("");
 			}

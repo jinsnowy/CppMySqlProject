@@ -9,11 +9,13 @@ private:
 public:
 	bool Execute(const std::string& exeCmd)
 	{
+		bool result = false;
+
 		try 
 		{
 			auto stopWatch = Stopwatch::StartNow();
 			
-			OnExecute(exeCmd);
+			result = OnExecute(exeCmd);
 			
 			stopWatch.Stop();
 
@@ -24,24 +26,28 @@ public:
 			Logger::ErrorLog("Execution Failed : %s, Error Message : %s, Error Code : %d, Error State : %s", Where(), e.what(), e.getErrorCode(), e.getSQLStateCStr());
 			
 			OnError();
-			
-			return false;
+		}
+		catch (std::exception e)
+		{
+			Logger::ErrorLog("Execution Failed : %s, Error Message : %s By StdException", Where(), e.what());
+
+			OnError();
 		}
 
-		return true;
+		return result;
 	}
 
 	virtual ~SqlCmd()
 	{
 	}
 
-	long GetElapsedMilliSec() const
+	long long GetElapsedMilliSec() const
 	{
 		return mElapsedMilliSec;
 	}
 
 protected:
-	virtual void OnExecute(const std::string& exeCmd) = 0;
+	virtual bool OnExecute(const std::string& exeCmd) = 0;
 	virtual void OnError() {};
 	virtual const char* Where() = 0;
 };
@@ -55,11 +61,13 @@ private:
 public:
 	bool Execute()
 	{
+		bool result = false;
+
 		try
 		{
 			auto stopWatch = Stopwatch::StartNow();
 
-			OnExecute();
+			result = OnExecute();
 
 			stopWatch.Stop();
 
@@ -70,11 +78,15 @@ public:
 			Logger::ErrorLog("Execution Failed : %s, Error Message : %s, Error Code : %d, Error State : %s", Where(), e.what(), e.getErrorCode(), e.getSQLStateCStr());
 			
 			OnError();
+		}
+		catch (std::exception e)
+		{
+			Logger::ErrorLog("Execution Failed : %s, Error Message : %s By StdException", Where(), e.what());
 
-			return false;
+			OnError();
 		}
 
-		return true;
+		return result;
 	}
 
 	virtual ~SqlNoCmd()
@@ -87,7 +99,7 @@ public:
 	}
 
 protected:
-	virtual void OnExecute() = 0;
+	virtual bool OnExecute() = 0;
 	virtual void OnError() {};
 	virtual const char* Where() = 0;
 };

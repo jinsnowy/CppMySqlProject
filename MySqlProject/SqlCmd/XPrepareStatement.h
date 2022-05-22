@@ -17,7 +17,7 @@ public:
 	{}
 
 public:
-	virtual void OnExecute() override { mStatement->execute(); };
+	virtual bool OnExecute() override { return mStatement->execute(); };
 	virtual void OnError() override { if (mTransaction) mStatement->execute("ROLLBACK;"); }
 	virtual const char* Where() override { return "PrepareStatement"; };
 

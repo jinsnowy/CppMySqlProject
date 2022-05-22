@@ -3,14 +3,14 @@
 #include "SqlCmd/XStatement.h"
 #include "SqlCmd/XPrepareStatement.h"
 
-std::shared_ptr<XStatement> DbConnection::CreateStatement()
+std::unique_ptr<XStatement> DbConnection::CreateStatement()
 {
-	return std::shared_ptr<XStatement>(new XStatement(mConn->createStatement()));
+	return std::unique_ptr<XStatement>(new XStatement(mConn->createStatement()));
 }
 
-std::shared_ptr<XPrepareStatement> DbConnection::CreatePrepareStatement(const std::string& statement, bool bTransaction)
+std::unique_ptr<XPrepareStatement> DbConnection::CreatePrepareStatement(const std::string& statement, bool bTransaction)
 {
-	return std::shared_ptr<XPrepareStatement>(new XPrepareStatement(mConn->prepareStatement(statement), bTransaction));
+	return std::unique_ptr<XPrepareStatement>(new XPrepareStatement(mConn->prepareStatement(statement), bTransaction));
 }
 
 void DbConnection::SetAutoCommit(bool bAuto)

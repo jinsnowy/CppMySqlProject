@@ -8,6 +8,7 @@
 
 #include "SqlCmd/QueryCommon.h"
 #include "SqlDef/XTable.h"
+#include "StoredProcedure.h"
 
 #include "ProjectCommon.h"
 
@@ -41,13 +42,22 @@ void ProjectScenario::CreateTables()
 	if (db->CreateTable(std::move(accountTbl)) == nullptr)
 		return;
 
-	auto transactionTbl = Table("TransactionTbl");
-	transactionTbl->Append(Column<EDataType::BIGINT>("transactionId", Const::Const::NotNull, Const::Auto, Const::Pk));
-	transactionTbl->Append(Column<EDataType::BIGINT>("cashAmount", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::BIGINT>("srcAccountId", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::BIGINT>("dstAccountId", Const::NotNull));
-	transactionTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
-	if (db->CreateTable(std::move(transactionTbl)) == nullptr)
+	auto accountHistoryTbl = Table("AccountHistoryTbl");
+	accountHistoryTbl->Append(Column<EDataType::BIGINT>("historyId", Const::NotNull, Const::Auto, Const::Pk));
+	accountHistoryTbl->Append(Column<EDataType::BIGINT>("accountId", Const::NotNull));
+	accountHistoryTbl->Append(Column<EDataType::SMALLINT>("infoType", Const::NotNull));
+	accountHistoryTbl->Append(Column<EDataType::BIGINT>("infoId", Const::NotNull, Const::MinusOne));
+	accountHistoryTbl->Append(Column<EDataType::BIGINT>("cashAmount", Const::NotNull));
+	accountHistoryTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
+	if (db->CreateTable(std::move(accountHistoryTbl)) == nullptr)
+		return;
+
+	auto sendInfoTbl = Table("SendInfoTbl");
+	sendInfoTbl->Append(Column<EDataType::BIGINT>("infoId", Const::NotNull, Const::Auto, Const::Pk));
+	sendInfoTbl->Append(Column<EDataType::BIGINT>("srcAccountId", Const::NotNull));
+	sendInfoTbl->Append(Column<EDataType::BIGINT>("dstAccountId", Const::NotNull));
+	sendInfoTbl->Append(Column<EDataType::BIGINT>("amount", Const::NotNull));
+	if (db->CreateTable(std::move(sendInfoTbl)) == nullptr)
 		return;
 
 	// auto statement = g_Conn->CreateStatement();
@@ -161,6 +171,92 @@ void ProjectScenario::CreateAccountDatas()
 	}
 }
 
+void ProjectScenario::QueryDatas()
+{
+	auto conn = DatabaseManager::Get()->GetDefaultConnection();
+	auto statement = conn->CreateStatement();
+	auto query = statement->ExecuteQuery("SELECT * FROM UserTbl U JOIN AccountTbl A ON U.userId = A.userId");
+	auto queryResult = query->GetResult();
+	while (queryResult->next())
+	{
+		auto userId = queryResult->getInt64("userId");
+		auto userName = queryResult->getString("userName");
+		auto userInfo = UserFactory::Get()->GetUser(userId);
+		if (userInfo == nullptr)
+		{
+			userInfo = UserFactory::Get()->CreateUser(userId, userName);
+		}
+
+		auto accountId = queryResult->getInt64("accountId");
+		if (userInfo->GetAccount() == nullptr)
+		{
+			auto cashAmount = queryResult->getInt64("cashAmount");
+			auto created = DateTime::FromString(queryResult->getString("created"));
+			auto updated = DateTime::FromString(queryResult->getString("updated"));
+			auto accountInfo = AccountInfo::Create(userInfo.get(), accountId, cashAmount, created, updated);
+			userInfo->AddAcount(accountInfo);
+		}
+	}
+}
+
+
+void ProjectScenario::AddSomeCash()
+{
+	auto users = UserFactory::Get()->GetUsers();
+	Random casher = Random::GetRandom(0, 10000000);
+
+	long long total = 0;
+	for (auto& user : users)
+	{
+		auto cashAmount = (long long)casher.Next();
+		auto account = user->GetAccount();
+		auto afterAmount = account->GetCash() + cashAmount;
+
+		AddCashSP sp(account->GetKey(), cashAmount, afterAmount);
+		if (sp.Execute())
+		{
+			account->Update(afterAmount, sp.updated);
+			total += sp.GetElapsedMilliSec();
+		}
+	}
+
+	Logger::DebugLog("AddCash Executes %lld ms", total);
+}
+
+void ProjectScenario::SendSomeCash()
+{
+	auto users = UserFactory::Get()->GetUsers();
+
+	Random userSelector = Random::GetRandom(0, (int)(users.size() - 1));
+
+	long long total = 0;
+	for (int i = 0; i < 10000; ++i)
+	{
+		auto pair = userSelector.GetRandomUniqueSet(2);
+
+		const auto& srcAccount = users[pair[0]]->GetAccount();
+		const auto& dstAccount = users[pair[1]]->GetAccount();
+
+		const auto& amount = srcAccount->GetCash() / 2;
+		if (amount == 0)
+		{
+			continue;
+		}
+
+		long long afterSrcAmount = srcAccount->GetCash() - amount;
+		long long afterDstAmount = dstAccount->GetCash() + amount;
+		SendCashSP sp(srcAccount->GetKey(), dstAccount->GetKey(), amount, afterSrcAmount, afterDstAmount);
+		if (sp.Execute())
+		{
+			srcAccount->Update(afterSrcAmount, sp.updated);
+			dstAccount->Update(afterDstAmount, sp.updated);
+			total += sp.GetElapsedMilliSec();
+		}
+	}
+
+	Logger::DebugLog("SendCash Executes %lld ms", total);
+}
+
 static void TransactionByPrepareStatement()
 {
 	auto users = UserFactory::Get()->GetUsers();
@@ -190,33 +286,4 @@ static void TransactionByPrepareStatement()
 	}
 
 	Logger::DebugLog("By PrepareStatement Executes %lld ms", total);
-}
-
-static void TransactionByStoredProcedure()
-{
-	auto users = UserFactory::Get()->GetUsers();
-
-	Random userSelector = Random::GetRandom(0, (int)(users.size() - 1));
-
-	auto sp = SPManager::GetProcedure("sendTransaction");
-	long long total = 0;
-	for (int i = 0; i < 10000; ++i)
-	{
-		auto pair = userSelector.GetRandomUniqueSet(2);
-
-		const auto& srcAccount = users[pair[0]];
-		const auto& dstAccount = users[pair[1]];
-
-		const auto& amount = srcAccount->GetCash() / 2;
-		if (amount == 0)
-		{
-			continue;
-		}
-
-		sp->Bind(srcAccount->GetUserId(), dstAccount->GetUserId(), amount);
-		sp->Execute();
-		total += sp->GetElapsedMilliSec();
-	}
-
-	Logger::DebugLog("By StoredProcedure Executes %lld ms", total);
 }

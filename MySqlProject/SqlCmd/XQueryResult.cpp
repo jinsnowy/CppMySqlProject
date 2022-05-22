@@ -2,7 +2,9 @@
 #include "XQueryResult.h"
 #include "XStatement.h"
 
-void XQueryResult::OnExecute()
+bool XQueryResult::OnExecute()
 {
-	mResult.reset(mStatement->mStatement->executeQuery(mQueryString));
+	mResult.reset(mStatement->ExecuteRawQuery(mQueryString));
+
+	return mResult != nullptr;
 }

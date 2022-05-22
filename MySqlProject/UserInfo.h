@@ -1,20 +1,20 @@
 #pragma once
 
+#include "KeyInfo.h"
 #include "AccountInfo.h"
 
-class UserInfo
+class UserInfo : public KeyInfo<long long>
 {
 private:
-	long long mUserId;
 	std::string mUserName;
 	std::shared_ptr<AccountInfo> mAccount;
 
 public:
 	UserInfo(long long _userId, const std::string& _userName)
-		: mUserId(_userId), mUserName(_userName), mAccount(nullptr)
+		: KeyInfo(_userId), mUserName(_userName), mAccount(nullptr)
 	{}
 
-	long long GetUserId() const { return mUserId; }
+	long long GetUserId() const { return GetKey(); }
 
 	const std::string& GetUserName() const { return mUserName; }
 
@@ -39,4 +39,6 @@ public:
 
 		mAccount = info;
 	}
+
+	std::shared_ptr<AccountInfo> GetAccount() const { return mAccount; }
 };

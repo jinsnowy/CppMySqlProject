@@ -5,37 +5,41 @@ class XStatement;
 class XStoredProcedure : public SqlNoCmd<XStoredProcedure>
 {
 private:
-	std::string mName;
 	sql::SQLString mDropProcedureString;
 	sql::SQLString mCreateProcedureString;
 	sql::SQLString mCallString;
+	sql::SQLString mQueryResultString;
 
-	std::shared_ptr<XStatement> mStatement;
-private:
-	int mResult;
+protected:
+	std::string mName;
+	std::vector<std::string> mOutParams;
+	std::unique_ptr<XStatement> mStatement;
 
 public:
-	XStoredProcedure(const std::string& name, const std::string& dropString, const std::string& createString)
+	int mCallResult;
+	std::unique_ptr<sql::ResultSet> mResultSet;
+
+	XStoredProcedure(const std::string& name, const std::string& dropString, const std::string& createString, const std::vector<std::string>& outParams)
 		:
 		mName(name),
 		mDropProcedureString(dropString),
 		mCreateProcedureString(createString),
-		mResult(-1)
+		mCallResult(-1),
+		mOutParams(outParams),
+		mStatement(nullptr)
 	{}
 
 	void Initialize();
 
-	int GetResult() const { return mResult; }
+	int GetResult() const { return mCallResult; }
 protected:
-	virtual void OnExecute() override;
+	virtual bool OnExecute() override;
 	virtual void OnError() override;
 	virtual const char* Where() override { return mCallString.c_str(); }
 
 public:
-	void BindStatement(const std::shared_ptr<XStatement> statement);
-
 	template<typename ...Args>
-	void Bind(const std::shared_ptr<XStatement>& statement, Args&&... args)
+	void Bind(XStatement* const& statement, Args&&... args)
 	{
 		mStatement = statement;
 
@@ -49,7 +53,9 @@ public:
 				0, ((void)(ss << args << ", "), 0) ...
 			};
 		}
-		ss << "@result)";
+
+		BindOutParams(ss);
+		ss << ")";
 
 		mCallString = ss.str();
 	}
@@ -65,9 +71,33 @@ public:
 			using List = int[];
 			(void)List {0, ((void)(ss << args << ", "), 0) ... };
 		}
-		ss << "@result)";
+
+		BindOutParams(ss);
+		ss << ")";
 
 		mCallString = ss.str();
 	}
-};
 
+private:
+	void BindOutParams(std::stringstream& ss)
+	{
+		if (mOutParams.size() == 0)
+			return;
+
+		std::stringstream rs;
+
+		int szParams = (int)mOutParams.size();
+		for (int i = 0; i < szParams; ++i)
+		{
+			rs << "@" << mOutParams[i];
+			if (i != szParams - 1)
+			{
+				rs << ", ";
+			}
+		}
+		
+		auto rs_str = rs.str();
+		ss << rs_str;
+		mQueryResultString = Format::format("SELECT %s;", rs_str.c_str());
+	}
+};

@@ -22,6 +22,8 @@ public:
 
 	static XStoredProcedure* GetProcedure(const std::string& spName);
 
+	static void Release();
+
 private:
 	bool ReadSqlScript(const std::string& spFilePath, std::string& script);
 

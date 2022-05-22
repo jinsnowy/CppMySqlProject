@@ -131,6 +131,9 @@
     <ClInclude Include="AccountInfo.h">
       <Filter>ProjectDef</Filter>
     </ClInclude>
+    <ClInclude Include="KeyInfo.h">
+      <Filter>ProjectDef</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SqlCmd\SqlCmd.cpp">
@@ -197,6 +200,9 @@
       <Filter>ProjectScenario</Filter>
     </ClCompile>
     <ClCompile Include="AccountInfo.cpp">
+      <Filter>ProjectDef</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyInfo.cpp">
       <Filter>ProjectDef</Filter>
     </ClCompile>
   </ItemGroup>

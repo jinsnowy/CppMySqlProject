@@ -1,21 +1,21 @@
 #pragma once
+#include "KeyInfo.h"
 
 class UserInfo;
-class AccountInfo
+class AccountInfo : public KeyInfo<long long>
 {
 private:
-	long long mAccountId;
+	UserInfo* mOwner;
 	long long mCashAmount;
 
 	DateTime mCreated;
 	DateTime mUpdated;
 
-	UserInfo* mOwner;
 public:
 	AccountInfo(UserInfo* user, long long accountId, long long cashAmount, const DateTime& created, const DateTime& updated)
 		:
+		KeyInfo(accountId),
 		mOwner(user),
-		mAccountId(accountId),
 		mCashAmount(cashAmount),
 		mCreated(created),
 		mUpdated(updated)

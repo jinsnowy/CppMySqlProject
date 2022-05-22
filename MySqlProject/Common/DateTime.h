@@ -13,6 +13,19 @@ public:
 		return *reinterpret_cast<DateTime*>(std::localtime(&t));
 	}
 
+	static DateTime FromString(const std::string& dateTimeStr)
+	{
+		static const std::string dateTimeFormat{ "%Y-%m-%d %H:%M:%S" };
+
+		std::istringstream ss{ dateTimeStr };
+
+		std::tm dt;
+
+		ss >> std::get_time(&dt, dateTimeFormat.c_str());
+
+		return *reinterpret_cast<DateTime*>(&dt);
+	}
+
 	bool IsValid()
 	{
 		switch (tm_mon)	

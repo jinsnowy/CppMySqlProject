@@ -26,10 +26,12 @@ std::vector<std::shared_ptr<UserInfo>> UserFactory::GetUsers() const
 	return result;
 }
 
-void UserFactory::CreateUser(long long userId, const std::string& userName)
+std::shared_ptr<UserInfo> UserFactory::CreateUser(long long userId, const std::string& userName)
 {
 	mUsers.emplace(userId, std::make_shared<UserInfo>(userId, userName));
 	mUsersByName.emplace(userName, mUsers[userId]);
+
+	return mUsers[userId];
 }
 
 std::shared_ptr<UserInfo> UserFactory::GetUser(long long userId)

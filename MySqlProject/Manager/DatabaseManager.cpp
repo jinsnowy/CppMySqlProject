@@ -63,7 +63,7 @@ Database* DatabaseManager::FindDatabase(const char* name)
 void DatabaseManager::UseDatabase(Database* db)
 {
 	auto statement = mDefaultConnection->CreateStatement();
-	statement->Execute(db->GetUseString());
+	statement->ExecuteRaw(db->GetUseString());
 }
 
 DbConnection* DatabaseManager::GetConnection(const char* connectionName)

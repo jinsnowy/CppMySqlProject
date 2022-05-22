@@ -54,6 +54,11 @@ XStoredProcedure* SPManager::GetProcedure(const std::string& spName)
 	return nullptr;
 }
 
+void SPManager::Release()
+{
+	mInst = nullptr;
+}
+
 bool SPManager::ReadSqlScript(const std::string& spFileName, std::string& script)
 {
 	try 
@@ -114,7 +119,8 @@ static inline void rtrim(std::string& s) {
 
 bool SPManager::ParseScript(const std::string& script)
 {
-	try {
+	try 
+	{
 		std::string rawScript = std::regex_replace(script, std::regex("\r\n"), "\n");
 		std::vector<std::string> lines = Split(rawScript, "\n");
 
@@ -126,15 +132,16 @@ bool SPManager::ParseScript(const std::string& script)
 		mContainer.clear();
 		std::string sp_name, sp_drop_string, sp_create_string;
 		std::regex sp_def_regex("PROCEDURE\\s?(\\w+)");
+		std::regex out_def_regex("OUT\\s+(\\w+)\\s+");
 
-		size_t i = 0, sz = lines.size();
-		while (i < sz)
+		size_t idx = 0, sz = lines.size();
+		while (idx < sz)
 		{
-			const auto& line = lines[i++];
+			const auto& line = lines[idx++];
 			if (line.find("CREATE") == std::string::npos)
 				continue;
 
-			std::match_results<std::string::const_iterator > mr;
+			std::match_results<std::string::const_iterator> mr;
 			if (!std::regex_search(line, mr, sp_def_regex))
 				continue;
 
@@ -144,20 +151,43 @@ bool SPManager::ParseScript(const std::string& script)
 			std::stringstream ss;
 			ss << line;
 
-			int count = 0;
-			while (i < sz)
+			// extract output params
+			std::vector<std::string> out_params;
+			auto create_line_st = line; size_t ipos = 0, wpos = 0, w2pos = 0;
+			std::for_each(create_line_st.begin(), create_line_st.end(), [](char& ch) { if (std::isalpha(ch)) { ch = std::toupper(ch); }});
+			std::sregex_iterator iter(create_line_st.begin(), create_line_st.end(), out_def_regex);
+			std::sregex_iterator end;
+			while (iter != end)
 			{
-				const auto& inner_line = lines[i++];
-				ss << inner_line;
-				++count;
-				if (inner_line.find("END") != std::string::npos)
-					break;
+				out_params.push_back((*iter)[1]);
+				++iter;
 			}
 
-			if (count > 2)
+			size_t last_commit_idx = -1, end_idx = -1;
+			while (idx < sz)
+			{
+				const auto& inner_line = lines[idx++];
+				ss << inner_line;
+				
+				if (inner_line.find("COMMIT") != std::string::npos)
+				{
+					last_commit_idx = idx - 1;
+				}
+
+				if (inner_line.find("END") != std::string::npos)
+				{
+					std::string end_string_not_if_end = inner_line; rtrim(end_string_not_if_end);
+					if (end_string_not_if_end == "END")
+					{
+						end_idx = idx - 1; break;
+					}
+				}
+			}
+
+			if (end_idx != -1)
 			{
 				sp_create_string = ss.str();
-				mContainer.emplace(sp_name, std::make_unique<XStoredProcedure>(sp_name, sp_drop_string, sp_create_string));
+				mContainer.emplace(sp_name, std::make_unique<XStoredProcedure>(sp_name, sp_drop_string, sp_create_string, out_params));
 			}
 		}
 	}
