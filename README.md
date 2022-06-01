@@ -32,6 +32,8 @@ if (db->CreateTable(std::move(userTbl)) == nullptr)
 ---
 __main.cpp__
 ```cpp
+int main(int argc, char** argv)
+{
 	DatabaseManager::Initialize();
 	PathManager::Initialize();
 	Logger::Initialize();
@@ -74,6 +76,9 @@ __main.cpp__
 
 	SPManager::Release();
 	DatabaseManager::Release();
+
+	return 0;
+}
 ```
 ## Dependencies
 ### MySQL C++ ODBC Connector
