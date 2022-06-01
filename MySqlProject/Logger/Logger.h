@@ -82,10 +82,10 @@ public:
 		Log(level, message.c_str());
 	}
 
-	template<typename ...Args>
-	static void Log(ELogLevel level, const char* format, Args&&... args)
+	template<typename ...T>
+	static void Log(ELogLevel level, const char* format, T&&... args)
 	{
-		Log(level, Format::format(format, std::forward<Args>(args)...));
+		Log(level, Format::format(format, std::forward<T>(args)...));
 	}
 
 	static void DebugLog(const char* message)
@@ -98,10 +98,10 @@ public:
 		Log(ELogLevel::Debug, message.c_str());
 	}
 
-	template<typename ...Args>
-	static void DebugLog(const char* format, Args&&... args)
+	template<typename ...T>
+	static void DebugLog(const char* format, T&&... args)
 	{
-		Log(ELogLevel::Debug, Format::format(format, std::forward<Args>(args)...));
+		Log(ELogLevel::Debug, Format::format(format, std::forward<T>(args)...));
 	}
 
 	static void ErrorLog(const char* message)
@@ -114,10 +114,10 @@ public:
 		Log(ELogLevel::Error, message.c_str());
 	}
 
-	template<typename ...Args>
-	static void ErrorLog(const char* format, Args&&... args)
+	template<typename ...T>
+	static void ErrorLog(const char* format, T&&... args)
 	{
-		Log(ELogLevel::Error, Format::format(format, std::forward<Args>(args)...));
+		Log(ELogLevel::Error, Format::format(format, std::forward<T>(args)...));
 	}
 private:
 	void LogFunc(ELogLevel level, const char* message)
