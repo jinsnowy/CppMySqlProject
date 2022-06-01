@@ -1,6 +1,6 @@
 #pragma once
-#include "Database.h"
 
+class Database;
 class DbConnection;
 class DatabaseManager
 {
@@ -14,21 +14,13 @@ private:
 	static std::unique_ptr<DatabaseManager> mInst;
 
 public:
-	DatabaseManager()
-		:
-		mDriver(get_driver_instance()),
-		mDefaultConnection(nullptr)
-	{
-	}
+	DatabaseManager();
 
 	~DatabaseManager();
 
 	static void Release();
 
-	static DatabaseManager* Get()
-	{
-		return mInst.get();
-	}
+	static DatabaseManager* Get();
 
 	static bool Initialize();
 
@@ -36,15 +28,12 @@ public:
 
 	void SetDefaultConnection(DbConnection* connection);
 
-	DbConnection* GetDefaultConnection() const { return mDefaultConnection; }
+	DbConnection* GetDefaultConnection() const;
 
 	// Assume database already exists
 	Database* RegisterDatabase(const char* name);
 
 	Database* FindDatabase(const char* name);
 
-	void UseDatabase(Database* db);
-
 	DbConnection* GetConnection(const char* connectionName);
-
 };

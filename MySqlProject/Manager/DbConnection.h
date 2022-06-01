@@ -2,6 +2,7 @@
 
 class XStatement;
 class XPrepareStatement;
+class Database;
 class DbConnection
 {
 private:
@@ -26,6 +27,7 @@ public:
 	std::unique_ptr<XStatement> CreateStatement();
 	std::unique_ptr<XPrepareStatement> CreatePrepareStatement(const std::string& statement, bool bTransaction = true);
 
+	void UseDatabase(Database* db);
 	void SetAutoCommit(bool bAuto);
 	void SetIsolationLevel(sql::enum_transaction_isolation level);
 };

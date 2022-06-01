@@ -134,6 +134,9 @@
     <ClInclude Include="KeyInfo.h">
       <Filter>ProjectDef</Filter>
     </ClInclude>
+    <ClInclude Include="DBWorker.h">
+      <Filter>ProjectScenario</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SqlCmd\SqlCmd.cpp">
@@ -204,6 +207,9 @@
     </ClCompile>
     <ClCompile Include="KeyInfo.cpp">
       <Filter>ProjectDef</Filter>
+    </ClCompile>
+    <ClCompile Include="DBWorker.cpp">
+      <Filter>ProjectScenario</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

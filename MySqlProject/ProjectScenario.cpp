@@ -2,15 +2,17 @@
 #include "ProjectScenario.h"
 
 #include "Config/Config.h"
-#include "Manager/DatabaseManager.h"
+#include "Manager/Database.h"
 #include "Manager/SPManager.h"
 #include "Manager/DbConnection.h"
 
 #include "SqlCmd/QueryCommon.h"
 #include "SqlDef/XTable.h"
 #include "StoredProcedure.h"
-
 #include "ProjectCommon.h"
+#include "DBWorker.h"
+
+using namespace std;
 
 std::unique_ptr<ProjectScenario> ProjectScenario::mInst = nullptr;
 
@@ -255,6 +257,125 @@ void ProjectScenario::SendSomeCash()
 	}
 
 	Logger::DebugLog("SendCash Executes %lld ms", total);
+}
+
+void ProjectScenario::ConcurrentSendCashSingleWorker()
+{
+	auto users = UserFactory::Get()->GetUsers();
+	int numOfConcurrency = (int)std::thread::hardware_concurrency();
+
+	Random userSelector = Random::GetRandom(0, (int)(users.size() - 1));
+	Random sendAmount = Random::GetRandom(100, 1000);
+
+	long long befSumAmount = 0;
+	for (auto& user : users)
+	{
+		befSumAmount += user->GetCash();
+	}
+
+	Logger::DebugLog("Before Send Cash : %lld", befSumAmount);
+
+	Database* stockDb = DatabaseManager::Get()->FindDatabase("StockDb");
+	vector<DbConnection*> conns;
+	for (int i = 0; i < numOfConcurrency; ++i)
+	{
+		auto connName = Format::format("connect[%d]", i);
+		DbConnection* conn = DatabaseManager::Get()->CreateConnection(connName.c_str(), Config::GetHostname(), Config::GetUsername(), Config::GetPassword());
+		conn->UseDatabase(stockDb);
+		conns.push_back(conn);
+	}
+
+	DbWorker dbWorker;
+	volatile long long added = 0;
+	volatile long long elapsed = 0;
+	volatile long long success_count = 0;
+	long long num_items_per_thread = 100;
+	
+	const auto do_work = [&](int id)
+	{
+		auto conn = conns[id];
+		conn->SetAutoCommit(true);
+		conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_READ_COMMITTED);
+
+		for (int i = 0; i < (int)num_items_per_thread; ++i)
+		{
+			auto pair = userSelector.GetRandomUniqueSet(2);
+
+			const auto& srcAccount = users[pair[0]]->GetAccount();
+			const auto& dstAccount = users[pair[1]]->GetAccount();
+
+			auto select_amount = (long long)sendAmount.Next();
+
+			long long beforeSrcAmount = srcAccount->GetCash();
+			if (beforeSrcAmount < select_amount)
+			{
+				select_amount = beforeSrcAmount;
+			}
+
+			if (select_amount == 0)
+			{
+				dbWorker.Queue(BaseSP::MakeSP<AddCashSP>(srcAccount->GetKey(), 1000, 1000), conn, [srcAccount, &added, &elapsed, &success_count](auto sp)
+				{
+					auto spc = (AddCashSP*)(sp.get());
+					srcAccount->Update(0, 1000, spc->updated);
+					_interlockedexchangeadd64(&added, 1000);
+					_interlockedexchangeadd64(&elapsed, spc->GetElapsedMilliSec());
+					_interlockedincrement64(&success_count);
+				});
+
+				dbWorker.Wait();
+				continue;
+			}
+
+			long long beforeDstAmount = dstAccount->GetCash();
+			long long afterSrcAmount = beforeSrcAmount - select_amount;
+			long long afterDstAmount = beforeDstAmount + select_amount;
+
+			dbWorker.Queue(BaseSP::MakeSP<SendCashSP>(srcAccount->GetKey(), dstAccount->GetKey(), select_amount, afterSrcAmount, afterDstAmount), conn, 
+				[srcAccount, dstAccount, beforeSrcAmount, beforeDstAmount, &added, &elapsed, &success_count](auto sp)
+			{
+				auto spc = (SendCashSP*)(sp.get());
+				srcAccount->Update(beforeSrcAmount, spc->afterSrcCashAmount, spc->updated);
+				dstAccount->Update(beforeDstAmount, spc->afterDstCashAmount, spc->updated);
+				_interlockedexchangeadd64(&elapsed, spc->GetElapsedMilliSec());
+				_interlockedincrement64(&success_count);
+			});
+		}
+	};
+
+	vector<thread> workers;
+	for (int i = 0; i < numOfConcurrency; ++i)
+	{
+		workers.emplace_back(do_work, i);
+	}
+
+	for (int i = 0; i < numOfConcurrency; ++i)
+	{
+		workers[i].join();
+	}
+
+	dbWorker.Wait();
+
+	long long afterSumAmount = 0;
+	for (auto& user : users)
+	{
+		afterSumAmount += user->GetCash();
+	}
+
+	auto conn = DatabaseManager::Get()->GetDefaultConnection();
+	conn->UseDatabase(stockDb);
+	long long afterSumAmountOnSelect = 0;
+	auto statement = conn->CreateStatement();
+	auto query = statement->ExecuteQuery("SELECT accountId, cashAmount FROM AccountTbl;");
+	auto queryResult = query->GetResult();
+	while (queryResult->next())
+	{
+		afterSumAmountOnSelect += queryResult->getInt64("cashAmount");
+	}
+
+	Logger::DebugLog("After ##Send Cash## cache : %lld, logic add : %lld, db select : %lld", afterSumAmount, added, afterSumAmountOnSelect);
+	Logger::DebugLog("Elapsed : %.3fms per item", elapsed / float(num_items_per_thread * numOfConcurrency));
+	Logger::DebugLog("Success rate : %.3f", float(success_count) / (float)(num_items_per_thread * numOfConcurrency));
 }
 
 static void TransactionByPrepareStatement()

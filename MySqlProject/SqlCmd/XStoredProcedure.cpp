@@ -21,6 +21,11 @@ void XStoredProcedure::Initialize()
 	Logger::DebugLog("Procedure %s Created.", mName.c_str());
 }
 
+void XStoredProcedure::CreateStatement(DbConnection* const& conn)
+{
+	mStatement = conn->CreateStatement();
+}
+
 bool XStoredProcedure::OnExecute()
 {
 	mCallResult = -1;
@@ -28,12 +33,8 @@ bool XStoredProcedure::OnExecute()
 	{
 		Bind();
 	}
-
-	auto conn = DatabaseManager::Get()->GetDefaultConnection();
-	mStatement = conn->CreateStatement();
+	
 	mStatement->ExecuteRaw(mCallString);
-
-	mStatement = conn->CreateStatement();
 	mStatement->ExecuteQueryResult(mQueryResultString, mResultSet);
 	if (mResultSet == nullptr || mResultSet->next() == false)
 	{

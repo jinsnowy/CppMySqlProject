@@ -15,7 +15,7 @@ void Config::Initialize(const char* filePath)
 std::string Config::GetHostname() 
 {
 	const auto& config = mInst->mMySqlConfig;
-	return Format::format("tcp://%s:%s", config.at("hostaddress").c_str(), config.at("port").c_str());
+	return Format::format("tcp://%s:%s", config.at("hostname").c_str(), config.at("port").c_str());
 }
 
 std::string Config::GetUsername() 
@@ -46,15 +46,29 @@ void Config::Load(const char* filePath)
 
 	mMySqlConfig.clear();
 	
+
 	try 
 	{
 		auto root = doc.FirstChildElement("Config");
 		auto sqlRoot = root->FirstChildElement("MySQL");
-		for (auto node = sqlRoot->FirstChild(); node; node = node->NextSibling())
+
+		auto config_value = [this](tinyxml2::XMLElement* node, const char* key_name, const char* default_value = "")
 		{
-			auto element = node->ToElement();
-			mMySqlConfig.emplace(element->Value(), element->GetText());
-		}
+			auto value = node->Attribute(key_name);
+			if (value != nullptr)
+			{
+				mMySqlConfig[key_name] = value;
+			}
+			else
+			{
+				mMySqlConfig[key_name] = default_value;
+			}
+		};
+
+		config_value(sqlRoot, "hostname", "localhost");
+		config_value(sqlRoot, "port");
+		config_value(sqlRoot, "username");
+		config_value(sqlRoot, "password");
 	}
 	catch (std::exception e)
 	{

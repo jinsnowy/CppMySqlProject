@@ -35,6 +35,18 @@ public:
 		mUpdated = updated;
 	}
 
+	void Update(long long beforeCashAmount, long long afterCashAmount, const DateTime& updated)
+	{
+		if (beforeCashAmount != mCashAmount)
+		{
+			Logger::ErrorLog("Some updates was applied before update now %lld, bef %lld", mCashAmount, beforeCashAmount);
+			return;
+		}
+
+		mCashAmount = afterCashAmount;
+		mUpdated = updated;
+	}
+
 	long long GetCash() const { return mCashAmount; }
 };
 
