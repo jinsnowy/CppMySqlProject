@@ -36,5 +36,6 @@
 #include "Manager/PathManager.h"
 #include "Logger/Logger.h"
 
+using namespace std;
 class DbConnection;
 extern DbConnection* g_Conn;

@@ -21,4 +21,6 @@ public:
 	static void AddSomeCash();
 
 	static void SendSomeCash();
+
+	static void ConcurrentSendCashSingleWorker();
 };

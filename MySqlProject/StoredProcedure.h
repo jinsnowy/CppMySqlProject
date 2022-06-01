@@ -6,20 +6,28 @@
 #include "Manager/SPManager.h"
 #include "SqlCmd/XStoredProcedure.h"
 #include "SqlCmd/XStatement.h"
+#include "Manager/DatabaseManager.h"
 
 struct BaseSP
 {
 	bool executed;
-	XStoredProcedure* procedure;
+	std::unique_ptr<XStoredProcedure> procedure;
 
 	BaseSP(const char* sp_name)
 		:
 		executed(false),
-		procedure(SPManager::GetProcedure(sp_name))
+		procedure(SPManager::GetProcedure(sp_name)->GetExecutable())
 	{}
 	
-	bool Execute()
+	bool Execute(DbConnection* connection = nullptr)
 	{
+		if (connection == nullptr)
+		{
+			connection = DatabaseManager::Get()->GetDefaultConnection();
+		}
+
+		procedure->CreateStatement(connection);
+
 		executed = OnExecute();
 		if (executed)
 		{
@@ -36,6 +44,12 @@ struct BaseSP
 	long long GetElapsedMilliSec() const
 	{
 		return procedure->GetElapsedMilliSec();
+	}
+
+	template<typename T, typename ...Args>
+	static std::shared_ptr<BaseSP> MakeSP(Args&&... args)
+	{
+		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
 protected:

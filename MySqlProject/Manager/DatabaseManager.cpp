@@ -1,11 +1,19 @@
 #include "stdafx.h"
 #include "DatabaseManager.h"
+#include "Database.h"
 #include "DbConnection.h"
 #include "SqlDef/Xtable.h"
 #include "Database.h"
 #include "SqlCmd/XStatement.h"
 
 std::unique_ptr<DatabaseManager> DatabaseManager::mInst = nullptr;
+
+DatabaseManager::DatabaseManager()
+	:
+	mDriver(get_driver_instance()),
+	mDefaultConnection(nullptr)
+{
+}
 
 DatabaseManager::~DatabaseManager()
 {
@@ -14,6 +22,11 @@ DatabaseManager::~DatabaseManager()
 void DatabaseManager::Release()
 {
 	mInst = nullptr;
+}
+
+DatabaseManager* DatabaseManager::Get()
+{
+	return mInst.get();
 }
 
 bool DatabaseManager::Initialize()
@@ -34,6 +47,11 @@ bool DatabaseManager::Initialize()
 void DatabaseManager::SetDefaultConnection(DbConnection* connection)
 {
 	mDefaultConnection = connection;
+}
+
+DbConnection* DatabaseManager::GetDefaultConnection() const
+{
+	return mDefaultConnection;
 }
 
 Database* DatabaseManager::RegisterDatabase(const char* name)
@@ -58,12 +76,6 @@ Database* DatabaseManager::FindDatabase(const char* name)
 	}
 
 	return nullptr;
-}
-
-void DatabaseManager::UseDatabase(Database* db)
-{
-	auto statement = mDefaultConnection->CreateStatement();
-	statement->ExecuteRaw(db->GetUseString());
 }
 
 DbConnection* DatabaseManager::GetConnection(const char* connectionName)

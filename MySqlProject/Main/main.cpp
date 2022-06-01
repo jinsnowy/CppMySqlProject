@@ -23,14 +23,14 @@ int main(int argc, char** argv)
 
 	g_Conn = DatabaseManager::Get()->CreateConnection("Default", Config::GetHostname(), Config::GetUsername(), Config::GetPassword());
 	g_Conn->SetAutoCommit(true);
-	g_Conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_REPEATABLE_READ);
+	g_Conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_READ_COMMITTED);
 	DatabaseManager::Get()->SetDefaultConnection(g_Conn);
 
 	ProjectScenario::Initialize();
 	UserFactory::Initialize();
 
 	auto db = DatabaseManager::Get()->RegisterDatabase("StockDb");
-	DatabaseManager::Get()->UseDatabase(db);
+	DatabaseManager::Get()->GetDefaultConnection()->UseDatabase(db);
 	SPManager::Install();
 
 	try 
@@ -38,11 +38,13 @@ int main(int argc, char** argv)
 		ProjectScenario::CreateTables();
 		ProjectScenario::CreateUsers();
 		ProjectScenario::CreateAccountDatas();
-		
-		ProjectScenario::AddSomeCash();
 
-		ProjectScenario::QueryDatas();
-		ProjectScenario::SendSomeCash();
+		//
+		// ProjectScenario::AddSomeCash();
+		// ProjectScenario::QueryDatas();
+		// ProjectScenario::SendSomeCash();
+
+		ProjectScenario::ConcurrentSendCashSingleWorker();
 	}
 	catch (sql::SQLException e)
 	{

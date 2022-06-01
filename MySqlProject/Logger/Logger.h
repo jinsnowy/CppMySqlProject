@@ -36,26 +36,16 @@ public:
 	{
 		using namespace std::literals::chrono_literals;
 
-		while (true)
-		{
-			{
-				std::lock_guard<std::mutex> _(mSync);
-				auto left = mBuffer.str();
-				if (left.size() == 0)
-				{
-					break;
-				}
-			}
-
-			mCV.notify_one();
-			std::this_thread::sleep_for(100s);
-		}
-
 		mExitFlag = true;
 		mCV.notify_one();
 		if (mWorker.joinable())
 		{
 			mWorker.join();
+		}
+
+		if (mInst->mOutFile.is_open())
+		{
+			mInst->mOutFile.close();
 		}
 	}
 
@@ -136,7 +126,10 @@ private:
 		auto logMessage = Format::format("[%s] [%s] : %s", now.c_str(), SLogLevel::GetTag(level), message);
 		{
 			std::lock_guard<std::mutex> _(mSync);
-			mBuffer << logMessage << "\n";
+			if (mExitFlag == false)
+			{
+				mBuffer << logMessage << "\n";
+			}
 		}
 
 		mCV.notify_one();
@@ -163,34 +156,21 @@ private:
 
 		while (!mExitFlag)
 		{
-			{
-				std::unique_lock<std::mutex> lk(mSync);
+			std::unique_lock<std::mutex> lk(mSync);
 
-				mCV.wait(lk, [this]() 
-				{
-					mBufferedString = mBuffer.str();
-					return mExitFlag || mBufferedString.size() > 0;
-				});
+			mCV.wait(lk);
 
-				mBuffer.str("");
-			}
+			mBufferedString = mBuffer.str();
+			mBuffer.str("");
+
+			lk.unlock();
 
 			if (mBufferedString.size() > 0)
 			{
 				Write();
 			}
 
-			if (mExitFlag)
-			{
-				break;
-			}
-
 			std::this_thread::sleep_for(std::chrono::milliseconds(mFlushDurationMilliSec));
-		}
-
-		if (mInst->mOutFile.is_open())
-		{
-			mInst->mOutFile.close();
 		}
 	}
 };

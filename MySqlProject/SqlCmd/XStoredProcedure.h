@@ -29,9 +29,23 @@ public:
 		mStatement(nullptr)
 	{}
 
+	XStoredProcedure(const std::string& name, const std::vector<std::string>& outParams)
+		:
+		mName(name),
+		mCallResult(-1),
+		mOutParams(outParams),
+		mStatement(nullptr)
+	{}
+
 	void Initialize();
 
 	int GetResult() const { return mCallResult; }
+	void CreateStatement(DbConnection* const& conn);
+	std::unique_ptr<XStoredProcedure> GetExecutable()
+	{
+		return std::make_unique<XStoredProcedure>(mName, mOutParams);
+	}
+
 protected:
 	virtual bool OnExecute() override;
 	virtual void OnError() override;
