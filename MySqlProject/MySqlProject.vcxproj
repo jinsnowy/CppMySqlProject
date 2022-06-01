@@ -217,6 +217,9 @@
     <ClCompile Include="UserFactory.cpp" />
     <ClCompile Include="UserInfo.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

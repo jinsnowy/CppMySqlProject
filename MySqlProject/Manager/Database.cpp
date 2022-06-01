@@ -78,6 +78,17 @@ sqldef::XTable* Database::CreateTable(std::unique_ptr<sqldef::XTable> table, boo
 	if (!statement->Execute(createStatement))
 		return nullptr;
 
+	if (table->HasIndex())
+	{
+		const auto& indexes = table->GetIndexInfos();
+		for (const auto& index : indexes)
+		{
+			auto createIndexStatement = index->Tag();
+			if (!statement->Execute(createIndexStatement))
+				return nullptr;
+		}
+	}
+
 	mTables.emplace(key, std::move(table));
 
 	return mTables[key].get();

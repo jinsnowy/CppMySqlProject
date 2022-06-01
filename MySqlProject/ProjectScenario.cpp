@@ -31,6 +31,7 @@ void ProjectScenario::CreateTables()
 	userTbl->Append(Column<EDataType::BIGINT>("userId", Const::NotNull, Const::Auto, Const::Pk));
 	userTbl->Append(Column<EDataType::VARCHAR, 24>("userName", Const::NotNull, Const::Unique));
 	userTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
+	userTbl->PushIndex("userName");
 	if (db->CreateTable(std::move(userTbl)) == nullptr)
 		return;
 
