@@ -9,8 +9,7 @@
 + User and Account (User deposits some cash in Account...)
 	- Tables and StoredProcedures (SendCash, AddCash)
 
-+ Programmable Database Object (Table Define, Query, PrepareStatement, StoreProcedure)
-	- <u>Table Define</u>
++ Programmable Table Define 
 
 ```cpp
 auto userTbl = Table("UserTbl");
@@ -22,9 +21,9 @@ if (db->CreateTable(std::move(userTbl)) == nullptr)
 	return;
 ```
 
-   - <u>Statement Wrappers</u>
-   * statement create from connection 
-   * XStatement, XPrepareStatement, XQueryResult, XStoredProcedure 
++ Statement Wrappers(Query, PrepareStatement, StoreProcedure)
+	- statement create from connection 
+	- XStatement, XPrepareStatement, XQueryResult, XStoredProcedure 
 
 + Scenario Test
 	- No Select Using By Cache Object (Object In Server Side)
