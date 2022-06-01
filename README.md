@@ -6,7 +6,7 @@
 	- MySQL C++ ODBC Connector
 	- TinyXml2
 
-+ User and Account (User deposits some cash in Account...)
++ Database Object : User and Account (User deposits some cash in Account...)
 	- Tables and StoredProcedures (SendCash, AddCash)
 
 + Programmable Table Define 
@@ -29,6 +29,51 @@ if (db->CreateTable(std::move(userTbl)) == nullptr)
 	- No Select Using By Cache Object (Object In Server Side)
 	- DbWorker (Single Thread) For SP
 
+main.cpp
+```cpp
+	DatabaseManager::Initialize();
+	PathManager::Initialize();
+	Logger::Initialize();
+	SPManager::Initialize(storedProcedureFileName);
+	Config::Initialize(configFileName);
+
+	g_Conn = DatabaseManager::Get()->CreateConnection("Default", Config::GetHostname(), Config::GetUsername(), Config::GetPassword());
+	g_Conn->SetAutoCommit(true);
+	g_Conn->SetIsolationLevel(sql::enum_transaction_isolation::TRANSACTION_READ_COMMITTED);
+	DatabaseManager::Get()->SetDefaultConnection(g_Conn);
+
+	ProjectScenario::Initialize();
+	UserFactory::Initialize();
+
+	auto db = DatabaseManager::Get()->RegisterDatabase("StockDb");
+	DatabaseManager::Get()->GetDefaultConnection()->UseDatabase(db);
+	SPManager::Install();
+
+	try 
+	{
+		ProjectScenario::CreateTables();
+		ProjectScenario::CreateUsers();
+		ProjectScenario::CreateAccountDatas();
+
+		//
+		// ProjectScenario::AddSomeCash();
+		// ProjectScenario::QueryDatas();
+		// ProjectScenario::SendSomeCash();
+
+		ProjectScenario::ConcurrentSendCashSingleWorker();
+	}
+	catch (sql::SQLException e)
+	{
+		Logger::ErrorLog("Sql Exception, Error Message : %s, Error Code : %d, Error State : %s", e.what(), e.getErrorCode(), e.getSQLStateCStr());
+	}
+	catch (std::exception e)
+	{
+		Logger::ErrorLog("Exception, Error Message : %s", e.what());
+	}
+
+	SPManager::Release();
+	DatabaseManager::Release();
+```
 ## Dependencies
 ### MySQL C++ ODBC Connector
 ![MySQL Connector](./mysql.png)
