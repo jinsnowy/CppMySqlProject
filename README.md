@@ -11,15 +11,17 @@
 
 + Programmable Database Object (Table Define, Query, PrepareStatement, StoreProcedure)
 	- <u>Table Define</u>
+
 ```cpp
-	auto userTbl = Table("UserTbl");
-	userTbl->Append(Column<EDataType::BIGINT>("userId", Const::NotNull, Const::Auto, Const::Pk));
-	userTbl->Append(Column<EDataType::VARCHAR, 24>("userName", Const::NotNull, Const::Unique));
-	userTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
-	userTbl->PushIndex("userName");
-	if (db->CreateTable(std::move(userTbl)) == nullptr)
-		return;
+auto userTbl = Table("UserTbl");
+userTbl->Append(Column<EDataType::BIGINT>("userId", Const::NotNull, Const::Auto, Const::Pk));
+userTbl->Append(Column<EDataType::VARCHAR, 24>("userName", Const::NotNull, Const::Unique));
+userTbl->Append(Column<EDataType::DATETIME>("created", Const::NotNull));
+userTbl->PushIndex("userName");
+if (db->CreateTable(std::move(userTbl)) == nullptr)
+	return;
 ```
+
    - <u>Statement Wrappers</u>
    * statement create from connection 
    * XStatement, XPrepareStatement, XQueryResult, XStoredProcedure 
